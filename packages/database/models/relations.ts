@@ -12,7 +12,6 @@ import { formClones } from "./form-clones.schema";
 export const usersRelations = relations(users, ({ many }) => ({
   forms: many(forms),
   templates: many(formTemplates),
-  emailLogs: many(emailLogs),
 }));
 
 export const formsRelations = relations(forms, ({ one, many }) => ({
