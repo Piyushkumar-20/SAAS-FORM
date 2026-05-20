@@ -9,13 +9,13 @@ const signToken = async (userId: string): Promise<string> => {
   return token;
 };
 
-const verifyToken = async (token: string): Promise<string> => {
+const verifyToken = async (token: string): Promise<{ userId: string }> => {
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT Secret not defined");
   }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as { userId: string };
-    return decoded.userId;
+    return decoded;
   } catch (error) {
     throw new Error("Invalid or expired token");
   }

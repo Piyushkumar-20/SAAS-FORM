@@ -11,3 +11,20 @@ export const tRPCContext = initTRPC
 export const router = tRPCContext.router;
 
 export const publicProcedure = tRPCContext.procedure;
+
+export const protectedProcedure = tRPCContext.procedure.use(async (opts) => {
+  const {ctx} = opts;
+
+  const userId = (ctx as any).userId;
+  
+  if (!userId) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "You must be logged in" });
+  }
+
+  return opts.next({
+    ctx: {
+      ...ctx,
+      userId,
+    },
+  });
+});
