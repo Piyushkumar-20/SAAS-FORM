@@ -1,4 +1,6 @@
 import { z } from "zod";
+export const zodUndefinedModel = z.undefined().describe("undefined");
+export { z };
 
 //  Seperate password Schema better for reuse
 const passwordSchema = z
