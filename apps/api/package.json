@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "dotenv -- tsx watch ./src/index.ts",
     "build": "tsup",
-    "lint": "eslint src/*"
+    "lint": "eslint src/*",
+      "dev": "dotenv -e ../../.env -- tsx watch ./src/index.ts"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
