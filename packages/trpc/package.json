@@ -5,6 +5,8 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+      "@repo/services": "workspace:*",
+      "@types/node": "^20.11.0",
     "dotenv-cli": "^11.0.0",
     "typescript": "^5.9.3"
   },

@@ -39,3 +39,58 @@ export const AuthOutput = z.object({
 });
 
 export type AuthOutputType = z.infer<typeof AuthOutput>;
+
+// Form schemas
+
+// Reusable theme
+const themeSettingSchema = z.object({
+  backgroundColor: z.string().default("#ffffff"),
+  textColor: z.string().default("#000000"),
+  accentColor: z.string().default("#007bff"),
+  fontFamily: z.string().default("sans-serif"),
+  backgroundImage: z.string().optional(),
+});
+
+// Create Form Input
+export const CreateFormInput = z.object({
+  title: z.string().min(1, "Title is required").max(200, "Maximum 200 is allowed"),
+  description: z.string().max(1000).optional().nullable(),
+  themeSettings: themeSettingSchema,
+});
+
+export type CreateFormInput = z.infer<typeof CreateFormInput>;
+
+// update form input
+export const UpdateFormInput = z.object({
+  id: z.string().uuid("Invalid Form Id"),
+  title: z.string().min(1).max(200).optional(),
+  description: z.string().max(1000).optional().nullable(),
+  themeSettings: themeSettingSchema.partial().optional(),
+});
+export type UpdateFormInputType = z.infer<typeof UpdateFormInput>;
+
+// PUBLISH FORM INPUT
+export const PublishFormInput = z.object({
+  id: z.string().uuid(),
+  visibility: z.enum(["public", "unlisted"]),
+});
+
+export type PublishFormInputType = z.infer<typeof PublishFormInput>;
+
+// FORM OUTPUT (what API returns)
+export const FormOutput = z.object({
+  id: z.string().uuid(),
+  title: z.string(),
+  description: z.string().nullable(),
+  slug: z.string(),
+  status: z.enum(["DRAFT", "PUBLISHED"]),
+  visibility: z.enum(["public", "unlisted"]),
+  creatorId: z.string().uuid(),
+  themeSettings: themeSettingSchema,
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  viewCount: z.number(),
+  submissionCount: z.number(),
+});
+
+export type FormOutputType = z.infer<typeof FormOutput>;
