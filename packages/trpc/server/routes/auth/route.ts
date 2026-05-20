@@ -1,5 +1,5 @@
 import { z, zodUndefinedModel, SignupInput, LoginInput, AuthOutput } from "../../schema";
-import { userService } from "../../services";
+import { userService } from "../../services/user";
 import { getAuthenticationMethodOutputSchema } from "@repo/services/user/model";
 import { publicProcedure, router } from "../../trpc";
 import { generatePath } from "../../utils/path-generator";
