@@ -2,6 +2,7 @@ import express from "express";
 import { logger } from "@repo/logger";
 import cors from "cors";
 
+
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { generateOpenApiDocument, createOpenApiExpressMiddleware } from "trpc-to-openapi";
 import { apiReference } from "@scalar/express-api-reference";
@@ -27,6 +28,7 @@ if (env.NODE_ENV !== "prod") {
 }
 
 app.use(express.json());
+
 
 app.get("/", (req, res) => {
   return res.json({ message: "Streamyst is up and running..." });
