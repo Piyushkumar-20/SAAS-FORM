@@ -42,7 +42,7 @@ export const useLogout = () => {
       // Reset all queries to initial state
       await utils.resetQueries()
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       console.error("Logout failed:", error)
     },
   })
