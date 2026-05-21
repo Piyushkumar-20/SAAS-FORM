@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import { Button } from "~/components/ui/button"
@@ -18,6 +17,7 @@ import {
   FieldLabel,
 } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
+import { useSignup } from "~/hooks/api/auth"
 
 interface SignupFormData {
   fullname: string
@@ -28,8 +28,7 @@ interface SignupFormData {
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [apiError, setApiError] = useState<string | null>(null)
+  const { signupAsync, isPending, error } = useSignup()
 
   const {
     register,
@@ -48,37 +47,12 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const password = watch("password")
 
   const onSubmit = async (data: SignupFormData) => {
-    setIsLoading(true)
-    setApiError(null)
-
     try {
-      // FIX 1: Direct Fetch to your backend URL
-      // We use fetch directly to avoid the "Missing Module" typescript error
-      const response = await fetch("http://localhost:8000/trpc/auth.signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-       
-        body: JSON.stringify({
-          email: data.email,
-          fullname: data.fullname,
-          password: data.password,
-        }),
+      const result = await signupAsync({
+        email: data.email,
+        fullname: data.fullname,
+        password: data.password,
       })
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const payload: any = await response.json()
-
-      if (!response.ok) {
-        // Handle generic tRPC error object
-        const errMessage = payload?.error?.message || payload?.message || "Signup failed"
-        setApiError(errMessage)
-        return
-      }
-
-      // Handle successful response wrapping
-      const result = payload?.result?.data ?? payload
 
       if (result?.token) {
         localStorage.setItem("token", result.token)
@@ -88,9 +62,6 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       router.push("/dashboard")
     } catch (error) {
       console.error("Signup error:", error)
-      setApiError("Connection failed. Please try again.")
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -104,9 +75,9 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          {apiError && (
+          {error && (
             <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
-              {apiError}
+              {error.message || "Signup failed"}
             </div>
           )}
           <FieldGroup>
@@ -186,10 +157,10 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
             </Field>
             <FieldGroup>
               <Field>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Creating Account..." : "Create Account"}
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? "Creating Account..." : "Create Account"}
                 </Button>
-                <Button variant="outline" type="button" disabled={isLoading}>
+                <Button variant="outline" type="button" disabled={isPending}>
                   Sign up with Google
                 </Button>
                 <FieldDescription className="px-6 text-center">

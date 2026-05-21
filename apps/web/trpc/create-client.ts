@@ -10,11 +10,5 @@ export const createTRPCHttpBatchClientClient = (opts?: CreateTRPCHttpBatchClient
   const apiUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8000/trpc";
   return c({
     url: apiUrl,
-    fetch(url, options) {
-      return fetch(url, {
-        ...options,
-        credentials: "include",
-      });
-    },
   });
 };

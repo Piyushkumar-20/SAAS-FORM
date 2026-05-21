@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import { cn } from "~/lib/utils"
@@ -19,6 +18,7 @@ import {
   FieldLabel,
 } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
+import { useSignin } from "~/hooks/api/auth"
 
 interface LoginFormData {
   email: string
@@ -30,8 +30,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [apiError, setApiError] = useState<string | null>(null)
+  const { signinAsync, isPending, error } = useSignin()
 
   const {
     register,
@@ -45,43 +44,20 @@ export function LoginForm({
   })
 
   const onSubmit = async (data: LoginFormData) => {
-    console.log("Form Data:", data)
-    setIsLoading(true)
-    setApiError(null)
-
     try {
-      const response = await fetch("http://localhost:8000/trpc/auth.login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ input: data }),
+      const result = await signinAsync({
+        email: data.email,
+        password: data.password,
       })
 
-      const payload = await response.json()
-      console.log("Response:", payload)
-
-      if (!response.ok) {
-        const errMessage = payload?.error?.message || payload?.message || "Login failed"
-        setApiError(errMessage)
-        return
-      }
-
-      const result = payload?.result?.data ?? payload
-
-      // Save token to localStorage
       if (result?.token) {
         localStorage.setItem("token", result.token)
         localStorage.setItem("user", JSON.stringify(result.user))
       }
 
-      // Redirect to dashboard
       router.push("/dashboard")
     } catch (error) {
       console.error("Login error:", error)
-      setApiError("An error occurred. Please try again.")
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -96,9 +72,9 @@ export function LoginForm({
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {apiError && (
+            {error && (
               <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
-                {apiError}
+                {error.message || "Login failed"}
               </div>
             )}
             <FieldGroup>
@@ -140,10 +116,10 @@ export function LoginForm({
                 )}
               </Field>
               <Field>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Logging in..." : "Login"}
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? "Logging in..." : "Login"}
                 </Button>
-                <Button variant="outline" type="button" disabled={isLoading}>
+                <Button variant="outline" type="button" disabled={isPending}>
                   Login with Google
                 </Button>
                 <FieldDescription className="text-center">
