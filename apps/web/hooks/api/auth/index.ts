@@ -35,13 +35,9 @@ export const useLogout = () => {
 
   const mutation = trpc.auth.logout.useMutation({
     onSuccess: async () => {
-      // Cookie is cleared on server
-      // Invalidate all auth queries to clear cached user data
       await utils.auth.getLoggedInUserInfo.invalidate()
-
-      // Reset all queries to initial state
-      await utils.resetQueries()
     },
+
     onError: (error: unknown) => {
       console.error("Logout failed:", error)
     },
