@@ -48,16 +48,18 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const password = watch("password")
 
   const onSubmit = async (data: SignupFormData) => {
-    console.log("Form Data:", data)
     setIsLoading(true)
     setApiError(null)
 
     try {
+      // FIX 1: Direct Fetch to your backend URL
+      // We use fetch directly to avoid the "Missing Module" typescript error
       const response = await fetch("http://localhost:8000/trpc/auth.signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+       
         body: JSON.stringify({
           email: data.email,
           fullname: data.fullname,
@@ -65,25 +67,28 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         }),
       })
 
-      const result = await response.json()
-      console.log("Response:", result)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const payload: any = await response.json()
 
       if (!response.ok) {
-        setApiError(result.message || "Signup failed")
+        // Handle generic tRPC error object
+        const errMessage = payload?.error?.message || payload?.message || "Signup failed"
+        setApiError(errMessage)
         return
       }
 
-      // Save token to localStorage
-      if (result.token) {
+      // Handle successful response wrapping
+      const result = payload?.result?.data ?? payload
+
+      if (result?.token) {
         localStorage.setItem("token", result.token)
         localStorage.setItem("user", JSON.stringify(result.user))
       }
 
-      // Redirect to dashboard
       router.push("/dashboard")
     } catch (error) {
       console.error("Signup error:", error)
-      setApiError("An error occurred. Please try again.")
+      setApiError("Connection failed. Please try again.")
     } finally {
       setIsLoading(false)
     }
@@ -188,7 +193,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                   Sign up with Google
                 </Button>
                 <FieldDescription className="px-6 text-center">
-                  Already have an account? <a href="#">Sign in</a>
+                  Already have an account? <a href="/login">Sign in</a>
                 </FieldDescription>
               </Field>
             </FieldGroup>
