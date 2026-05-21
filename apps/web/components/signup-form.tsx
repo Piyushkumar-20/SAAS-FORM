@@ -119,7 +119,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 {...register("fullname", { required: "Full name is required" })}
               />
               {errors.fullname && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-700">
                   {errors.fullname.message}
                 </span>
               )}
@@ -137,7 +137,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 with anyone else.
               </FieldDescription>
               {errors.email && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-700">
                   {errors.email.message}
                 </span>
               )}
@@ -159,7 +159,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 Must be at least 8 characters long.
               </FieldDescription>
               {errors.password && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-700">
                   {errors.password.message}
                 </span>
               )}
@@ -179,7 +179,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               />
               <FieldDescription>Please confirm your password.</FieldDescription>
               {errors.confirmPassword && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-700">
                   {errors.confirmPassword.message}
                 </span>
               )}
