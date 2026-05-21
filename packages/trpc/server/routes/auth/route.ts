@@ -117,6 +117,8 @@ export const authRouter = router({
         tags: TAGS,
       },
     })
+    .input(zodUndefinedModel)
+    .output(z.object({ success: z.boolean() }))
     .mutation(async () => {
       return {
         success: true,
@@ -131,6 +133,8 @@ export const authRouter = router({
         tags: TAGS,
       },
     })
+    .input(zodUndefinedModel)
+    .output(AuthOutput.shape.user)
     .query(async ({ ctx }) => {
       if (!ctx.userId) {
         throw new Error("Unauthorized");
